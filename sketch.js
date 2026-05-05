@@ -9,12 +9,17 @@ function setup() {
   
   // 擷取攝影機影像
   capture = createCapture(VIDEO);
-  capture.size(640, 480); // 設定固定大小以便於座標映射
+  // 調低偵測解析度至 320x240，可以讓臉部追蹤「跑快一點」
+  capture.size(320, 240); 
   
   // 隱藏預設產生的 HTML5 video 元件，只在畫布內顯示
   capture.hide();
 
   // 初始化 FaceMesh
+  if (typeof ml5 === 'undefined') {
+    console.error("ml5 尚未載入，請檢查網路連線或 CDN 連結");
+    return;
+  }
   facemesh = ml5.facemesh(capture, () => console.log("臉部辨識模型已準備就緒"));
   facemesh.on("predict", results => {
     predictions = results;
@@ -51,10 +56,10 @@ function draw() {
       let p1 = keypoints[pointsToConnect[i]];
       let p2 = keypoints[pointsToConnect[i + 1]];
       line(
-        map(p1[0], 0, 640, x, x + imgW),
-        map(p1[1], 0, 480, y, y + imgH),
-        map(p2[0], 0, 640, x, x + imgW),
-        map(p2[1], 0, 480, y, y + imgH)
+        map(p1[0], 0, 320, x, x + imgW),
+        map(p1[1], 0, 240, y, y + imgH),
+        map(p2[0], 0, 320, x, x + imgW),
+        map(p2[1], 0, 240, y, y + imgH)
       );
     }
   }
