@@ -1,6 +1,7 @@
 let capture;
 let faceMesh;
 let faces = [];
+let isModelLoading = true; // 新增一個變數來追蹤模型是否正在載入
 let isModelReady = false;
 let pointsToConnect = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
 
@@ -21,11 +22,13 @@ function setup() {
     console.error("ml5 尚未載入，請檢查網路連線或 CDN 連結");
     return;
   }
-  // ml5 v1.x 改用 faceMesh (M 大寫)
+  // ml5 v1.x 改用 faceMesh (M 大寫)，並在模型載入完成後才開始偵測
   faceMesh = ml5.faceMesh(capture, { maxFaces: 1, refineLandmarks: false, flipHorizontal: false }, () => {
     console.log("臉部辨識模型已準備就緒");
     isModelReady = true;
-    // v1.x 改用 detectStart 進行持續偵測
+    isModelLoading = false; // 模型載入完成
+    // 模型準備好後才開始偵測
+    // v1.x 使用 detectStart 進行持續偵測
     faceMesh.detectStart(capture, results => {
       faces = results;
     });
@@ -45,11 +48,11 @@ function draw() {
   let y = (height - imgH) / 2;
   
   // 如果攝影機或模型還沒準備好，顯示載入文字
-  if (!isModelReady || capture.width === 0) {
+  if (!isModelReady || capture.width === 0 || isModelLoading) { // 增加 isModelLoading 判斷
     fill(0);
     textAlign(CENTER, CENTER);
     textSize(20);
-    text("正在啟動攝影機與辨識模型...", width / 2, height / 2);
+    text(isModelLoading ? "正在載入臉部辨識模型..." : "正在啟動攝影機...", width / 2, height / 2);
     return;
   }
 
