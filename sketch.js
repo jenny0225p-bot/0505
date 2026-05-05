@@ -23,18 +23,20 @@ function draw() {
   let x = (width - imgW) / 2;
   let y = (height - imgH) / 2;
   
-  // 顯示文字：教科123456789
-  fill(0); // 設定文字為黑色
-  textSize(32); // 設定文字大小
-  textAlign(CENTER, BOTTOM); // 水平置中，基準點在文字底部
-  text("教科123456789", width / 2, y - 10); // 座標在畫布中央，影像上方 10 像素處
-
   // 實作左右翻轉（鏡像效果）
   push();
   translate(width, 0);
   scale(-1, 1);
   // 由於座標系已翻轉，影像會維持在置中位置（因為 x 是對稱的）
   image(capture, x, y, imgW, imgH);
+  pop();
+
+  // 顯示文字：教科123456789（放在最後確保顯示在最上層）
+  push();
+  fill(0); // 設定文字為黑色
+  textSize(32); // 設定文字大小
+  textAlign(CENTER, BOTTOM); // 水平置中，基準點在文字底部
+  text("教科123456789", width / 2, y - 10); // 座標在畫布中央，影像上方 10 像素處
   pop();
 }
 
