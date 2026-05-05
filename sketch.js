@@ -23,6 +23,12 @@ function draw() {
   let x = (width - imgW) / 2;
   let y = (height - imgH) / 2;
   
+  // 顯示文字：教科123456789
+  fill(0); // 設定文字為黑色
+  textSize(32); // 設定文字大小
+  textAlign(CENTER, BOTTOM); // 水平置中，基準點在文字底部
+  text("教科123456789", width / 2, y - 10); // 座標在畫布中央，影像上方 10 像素處
+
   // 實作左右翻轉（鏡像效果）
   push();
   translate(width, 0);
