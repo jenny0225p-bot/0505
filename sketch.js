@@ -24,7 +24,7 @@ function setup() {
     return;
   }
   // ml5 v1.x 改用 faceMesh (M 大寫)，並在模型載入完成後才開始偵測
-  faceMesh = ml5.faceMesh(capture, { maxFaces: 1, refineLandmarks: false, flipHorizontal: false }, () => {
+  faceMesh = ml5.faceMesh(capture, { maxFaces: 1, refineLandmarks: true, flipHorizontal: false }, () => {
     console.log("臉部辨識模型已準備就緒");
     isModelReady = true;
     isModelLoading = false; // 模型載入完成
@@ -77,10 +77,11 @@ function draw() {
       // 確保點位存在才繪製
       if (p1 && p2) {
         line(
-          map(p1.x, 0, 320, x, x + imgW),
-          map(p1.y, 0, 240, y, y + imgH),
-          map(p2.x, 0, 320, x, x + imgW),
-          map(p2.y, 0, 240, y, y + imgH)
+          // 使用 capture.width/height 代替 320/240 以確保座標映射準確
+          map(p1.x, 0, capture.width, x, x + imgW),
+          map(p1.y, 0, capture.height, y, y + imgH),
+          map(p2.x, 0, capture.width, x, x + imgW),
+          map(p2.y, 0, capture.height, y, y + imgH)
         );
       }
     }
@@ -92,10 +93,10 @@ function draw() {
       // 確保點位存在才繪製
       if (p1 && p2) {
         line(
-          map(p1.x, 0, 320, x, x + imgW),
-          map(p1.y, 0, 240, y, y + imgH),
-          map(p2.x, 0, 320, x, x + imgW),
-          map(p2.y, 0, 240, y, y + imgH)
+          map(p1.x, 0, capture.width, x, x + imgW),
+          map(p1.y, 0, capture.height, y, y + imgH),
+          map(p2.x, 0, capture.width, x, x + imgW),
+          map(p2.y, 0, capture.height, y, y + imgH)
         );
       }
     }
