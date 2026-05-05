@@ -1,4 +1,7 @@
 let capture;
+let facemesh;
+let predictions = [];
+let pointsToConnect = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
 
 function setup() {
   // 建立全螢幕畫布
@@ -6,9 +9,16 @@ function setup() {
   
   // 擷取攝影機影像
   capture = createCapture(VIDEO);
+  capture.size(640, 480); // 設定固定大小以便於座標映射
   
   // 隱藏預設產生的 HTML5 video 元件，只在畫布內顯示
   capture.hide();
+
+  // 初始化 FaceMesh
+  facemesh = ml5.facemesh(capture, () => console.log("臉部辨識模型已準備就緒"));
+  facemesh.on("predict", results => {
+    predictions = results;
+  });
 }
 
 function draw() {
@@ -29,6 +39,25 @@ function draw() {
   scale(-1, 1);
   // 由於座標系已翻轉，影像會維持在置中位置（因為 x 是對稱的）
   image(capture, x, y, imgW, imgH);
+
+  // 繪製臉部辨識線條
+  if (predictions.length > 0) {
+    let keypoints = predictions[0].scaledMesh;
+    stroke(255, 0, 0); // 線條採用紅色
+    strokeWeight(15);  // 線條粗細為 15
+    noFill();
+    // 利用 line 指令串接指定編號的點
+    for (let i = 0; i < pointsToConnect.length - 1; i++) {
+      let p1 = keypoints[pointsToConnect[i]];
+      let p2 = keypoints[pointsToConnect[i + 1]];
+      line(
+        map(p1[0], 0, 640, x, x + imgW),
+        map(p1[1], 0, 480, y, y + imgH),
+        map(p2[0], 0, 640, x, x + imgW),
+        map(p2[1], 0, 480, y, y + imgH)
+      );
+    }
+  }
   pop();
 
   // 顯示文字：教科123456789（放在最後確保顯示在最上層）
