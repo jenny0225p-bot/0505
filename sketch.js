@@ -23,18 +23,16 @@ function draw() {
   let x = (width - imgW) / 2;
   let y = (height - imgH) / 2;
   
-  // 在畫布中間繪製攝影機影像
+  // 實作左右翻轉（鏡像效果）
+  push();
+  translate(width, 0);
+  scale(-1, 1);
+  // 由於座標系已翻轉，影像會維持在置中位置（因為 x 是對稱的）
   image(capture, x, y, imgW, imgH);
+  pop();
 }
 
 // 當視窗大小改變時，自動調整畫布大小
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
-}
-function setup() {
-  createCanvas(400, 400);
-}
-
-function draw() {
-  background(220);
 }
