@@ -1,6 +1,6 @@
 let capture;
-let facemesh;
-let predictions = [];
+let faceMesh;
+let faces = [];
 let pointsToConnect = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
 
 function setup() {
@@ -20,9 +20,13 @@ function setup() {
     console.error("ml5 尚未載入，請檢查網路連線或 CDN 連結");
     return;
   }
-  facemesh = ml5.facemesh(capture, () => console.log("臉部辨識模型已準備就緒"));
-  facemesh.on("predict", results => {
-    predictions = results;
+  // ml5 v1.x 改用 faceMesh (M 大寫)
+  faceMesh = ml5.faceMesh(capture, { maxFaces: 1, refineLandmarks: false, flipHorizontal: false }, () => {
+    console.log("臉部辨識模型已準備就緒");
+  });
+  // v1.x 改用 detectStart 進行持續偵測
+  faceMesh.detectStart(capture, results => {
+    faces = results;
   });
 }
 
@@ -46,8 +50,8 @@ function draw() {
   image(capture, x, y, imgW, imgH);
 
   // 繪製臉部辨識線條
-  if (predictions.length > 0) {
-    let keypoints = predictions[0].scaledMesh;
+  if (faces.length > 0) {
+    let keypoints = faces[0].keypoints;
     stroke(255, 0, 0); // 線條採用紅色
     strokeWeight(15);  // 線條粗細為 15
     noFill();
@@ -56,10 +60,10 @@ function draw() {
       let p1 = keypoints[pointsToConnect[i]];
       let p2 = keypoints[pointsToConnect[i + 1]];
       line(
-        map(p1[0], 0, 320, x, x + imgW),
-        map(p1[1], 0, 240, y, y + imgH),
-        map(p2[0], 0, 320, x, x + imgW),
-        map(p2[1], 0, 240, y, y + imgH)
+        map(p1.x, 0, 320, x, x + imgW),
+        map(p1.y, 0, 240, y, y + imgH),
+        map(p2.x, 0, 320, x, x + imgW),
+        map(p2.y, 0, 240, y, y + imgH)
       );
     }
   }
