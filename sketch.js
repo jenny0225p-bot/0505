@@ -1,6 +1,7 @@
 let capture;
 let faceMesh;
 let faces = [];
+let isModelReady = false;
 let pointsToConnect = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
 
 function setup() {
@@ -23,10 +24,11 @@ function setup() {
   // ml5 v1.x 改用 faceMesh (M 大寫)
   faceMesh = ml5.faceMesh(capture, { maxFaces: 1, refineLandmarks: false, flipHorizontal: false }, () => {
     console.log("臉部辨識模型已準備就緒");
-  });
-  // v1.x 改用 detectStart 進行持續偵測
-  faceMesh.detectStart(capture, results => {
-    faces = results;
+    isModelReady = true;
+    // v1.x 改用 detectStart 進行持續偵測
+    faceMesh.detectStart(capture, results => {
+      faces = results;
+    });
   });
 }
 
@@ -42,6 +44,15 @@ function draw() {
   let x = (width - imgW) / 2;
   let y = (height - imgH) / 2;
   
+  // 如果攝影機或模型還沒準備好，顯示載入文字
+  if (!isModelReady || capture.width === 0) {
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text("正在啟動攝影機與辨識模型...", width / 2, height / 2);
+    return;
+  }
+
   // 實作左右翻轉（鏡像效果）
   push();
   translate(width, 0);
@@ -59,12 +70,15 @@ function draw() {
     for (let i = 0; i < pointsToConnect.length - 1; i++) {
       let p1 = keypoints[pointsToConnect[i]];
       let p2 = keypoints[pointsToConnect[i + 1]];
-      line(
-        map(p1.x, 0, 320, x, x + imgW),
-        map(p1.y, 0, 240, y, y + imgH),
-        map(p2.x, 0, 320, x, x + imgW),
-        map(p2.y, 0, 240, y, y + imgH)
-      );
+      // 確保點位存在才繪製
+      if (p1 && p2) {
+        line(
+          map(p1.x, 0, 320, x, x + imgW),
+          map(p1.y, 0, 240, y, y + imgH),
+          map(p2.x, 0, 320, x, x + imgW),
+          map(p2.y, 0, 240, y, y + imgH)
+        );
+      }
     }
   }
   pop();
@@ -74,7 +88,7 @@ function draw() {
   fill(0); // 設定文字為黑色
   textSize(32); // 設定文字大小
   textAlign(CENTER, BOTTOM); // 水平置中，基準點在文字底部
-  text("教科123456789", width / 2, y - 10); // 座標在畫布中央，影像上方 10 像素處
+  text("教科12345678", width / 2, y - 10); // 座標在畫布中央，影像上方 10 像素處
   pop();
 }
 
