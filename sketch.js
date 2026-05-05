@@ -4,6 +4,7 @@ let faces = [];
 let isModelLoading = true; // 新增一個變數來追蹤模型是否正在載入
 let isModelReady = false;
 let pointsToConnect = [409, 270, 269, 267, 0, 37, 39, 40, 185, 61, 146, 91, 181, 84, 17, 314, 405, 321, 375, 291];
+let pointsToConnect2 = [76, 77, 90, 180, 85, 16, 315, 404, 320, 307, 306, 408, 304, 303, 302, 11, 72, 73, 74, 184];
 
 function setup() {
   // 建立全螢幕畫布
@@ -67,12 +68,27 @@ function draw() {
   if (faces.length > 0) {
     let keypoints = faces[0].keypoints;
     stroke(255, 0, 0); // 線條採用紅色
-    strokeWeight(15);  // 線條粗細為 15
+    strokeWeight(1);   // 線條粗細為 1
     noFill();
-    // 利用 line 指令串接指定編號的點
+    // 利用 line 指令串接第一組指定編號的點
     for (let i = 0; i < pointsToConnect.length - 1; i++) {
       let p1 = keypoints[pointsToConnect[i]];
       let p2 = keypoints[pointsToConnect[i + 1]];
+      // 確保點位存在才繪製
+      if (p1 && p2) {
+        line(
+          map(p1.x, 0, 320, x, x + imgW),
+          map(p1.y, 0, 240, y, y + imgH),
+          map(p2.x, 0, 320, x, x + imgW),
+          map(p2.y, 0, 240, y, y + imgH)
+        );
+      }
+    }
+
+    // 利用 line 指令串接第二組指定編號的點
+    for (let i = 0; i < pointsToConnect2.length - 1; i++) {
+      let p1 = keypoints[pointsToConnect2[i]];
+      let p2 = keypoints[pointsToConnect2[i + 1]];
       // 確保點位存在才繪製
       if (p1 && p2) {
         line(
